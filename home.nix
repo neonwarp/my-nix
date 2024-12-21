@@ -7,23 +7,26 @@
 
     stateVersion = "24.11";
 
-    packages = [
-      pkgs.volta
-      pkgs.go
-      pkgs.deno
-      pkgs.zoxide
-      pkgs.fzf
-      pkgs.ripgrep
-      pkgs.starship
-      pkgs.rustup
-      pkgs.gcc
-      pkgs.pkg-config
-      pkgs.openssl
+    packages = with pkgs; [
+      volta
+      go
+      deno
+      zoxide
+      fzf
+      ripgrep
+      ast-grep
+      starship
+      rustup
+      gcc
+      pkg-config
+      openssl
+      dotnet-sdk
     ];
 
     sessionVariables = {
       RUST_BACKTRACE = "full";
-      PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig";
+      PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+      DOTNET_CLI_TELEMETRY_OPTOUT = 1;
     };
   };
 
@@ -32,6 +35,10 @@
 
     bash = {
       enable = true;
+      initExtra = ''
+        export VOLTA_HOME="$HOME/.volta"
+        export PATH="$VOLTA_HOME/bin:$PATH"
+      '';
     };
 
     zoxide = {
@@ -51,8 +58,15 @@
       userName = "";
       userEmail = "";
       extraConfig = {
-        push = { autoSetupRemote = true; };
-        fetch = { rebase = true; };
+        init = { defaultBranch = "main"; };
+        color = { ui = "always"; };
+        help = { autoCorrect = true; };
+        push = {
+          followTags = true;
+          autoSetupRemote = true;
+        };
+        pull = { rebase = true; };
+        fetch = { prune = true; };
       };
       aliases = {
         a = "add --all";
